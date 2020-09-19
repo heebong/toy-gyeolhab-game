@@ -1,11 +1,28 @@
 package domain
 
+import domain.Background.BLACK
+import domain.Background.GRAY
+import domain.Background.WHITE
+import domain.Color.GREEN
+import domain.Color.ORANGE
+import domain.Color.PURPLE
 import domain.RoundCards.Companion.LIMIT_SIZE
+import domain.Shape.MOON
+import domain.Shape.STAR
+import domain.Shape.SUN
 import exception.RoundCardsException
-import org.amshove.kluent.*
+import org.amshove.kluent.AnyException
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should not throw`
+import org.amshove.kluent.`should throw`
+import org.amshove.kluent.`with message`
+import org.amshove.kluent.invoking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import java.util.stream.*
 
 class RoundCardsTest {
 
@@ -45,5 +62,19 @@ class RoundCardsTest {
         invoking { RoundCards(roundCards) }
             .`should throw`(RoundCardsException::class)
             .`with message`(message)
+    }
+
+    @Test
+    fun `합 리스트를 찾는다`() {
+        val cards = listOf(
+            Card(MOON, GREEN, BLACK), Card(SUN, GREEN, GRAY), Card(SUN, PURPLE, GRAY),
+            Card(MOON, GREEN, WHITE), Card(SUN, GREEN, WHITE), Card(STAR, PURPLE, BLACK),
+            Card(STAR, ORANGE, BLACK), Card(MOON, ORANGE, BLACK), Card(MOON, PURPLE, BLACK)
+        )
+        val roundCards = RoundCards(cards)
+
+        val habs: Set<CardIndexSet> = roundCards.habs
+
+        habs `should be equal to` setOf(CardIndexSet(9, 8, 1), CardIndexSet(7, 4, 3))
     }
 }
