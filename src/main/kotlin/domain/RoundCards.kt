@@ -13,17 +13,25 @@ data class RoundCards(val cards: List<Card>) {
     val candidateHabs: MutableSet<CardIndexSet>
 
     init {
+        validateInit()
+
+        habs = generateHabs()
+        candidateHabs = habs.toMutableSet()
+    }
+
+    private fun validateInit() {
         validateInitRoundCards(cards.size == LIMIT_SIZE) { "RoundCards의 크기는 ${LIMIT_SIZE}여야 합니다." }
         validateInitRoundCards(cards.size == cards.toSet().size) { "중복되는 Card로 설정할 수 없습니다." }
+    }
 
-        habs = combinations
-                .asSequence()
+    private fun generateHabs(): Set<CardIndexSet> {
+        return combinations
+            .asSequence()
             .map { it.toList() }
             .map { CardSet(cards[it[0]], cards[it[1]], cards[it[2]]) }
             .filter { it.isHab() }
             .map { it.toIndexOfPlusOne(cards) }
             .toSet()
-        candidateHabs = habs.toMutableSet()
     }
 
     companion object {
